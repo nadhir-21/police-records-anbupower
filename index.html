@@ -1859,6 +1859,31 @@ if(savedUser){
 }
 
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<script>
+  const supabaseUrl = "ضع Project URL هنا";
+  const supabaseKey = "ضع Publishable key هنا";
+
+  const supabase = window.supabase.createClient(
+    supabaseUrl,
+    supabaseKey
+  );
+
+  async function loadDepartments() {
+    const { data, error } = await supabase
+      .from("department")
+      .select("*");
+
+    if (error) {
+      console.error("Supabase error:", error);
+      return;
+    }
+
+    console.log("بيانات قاعدة البيانات:", data);
+  }
+
+  loadDepartments();
+</script>
 </body>
 </html>
