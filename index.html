@@ -1,0 +1,1864 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سجل مراجعات شرطة</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    font-family:Arial,Tahoma,sans-serif;
+    background:#0d1117;
+    color:#fff;
+    min-height:100vh;
+}
+
+button,input{
+    font:inherit;
+}
+
+.container{
+    width:min(94%,900px);
+    margin:auto;
+}
+
+.hidden{
+    display:none!important;
+}
+
+.card{
+    background:#161b22;
+    border:1px solid #30363d;
+    border-radius:18px;
+    padding:22px;
+    margin:18px 0;
+    box-shadow:0 8px 30px #0004;
+}
+
+.login{
+    max-width:430px;
+    margin:12vh auto;
+}
+
+input{
+    width:100%;
+    padding:13px 14px;
+    margin:7px 0;
+    background:#0d1117;
+    color:#fff;
+    border:1px solid #30363d;
+    border-radius:10px;
+    outline:none;
+}
+
+input:focus{
+    border-color:#58a6ff;
+}
+
+.btn{
+    border:0;
+    border-radius:10px;
+    padding:12px 16px;
+    background:#238636;
+    color:#fff;
+    cursor:pointer;
+    margin:5px 0;
+}
+
+.btn.blue{
+    background:#1f6feb;
+}
+
+.btn.secondary{
+    background:#30363d;
+}
+
+.btn.danger{
+    background:#da3633;
+}
+
+.error{
+    color:#ff7b72;
+    min-height:24px;
+}
+
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.section-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:15px;
+}
+
+.section{
+    cursor:pointer;
+    transition:.2s;
+}
+
+.section:hover{
+    transform:translateY(-3px);
+    border-color:#58a6ff;
+}
+
+.section h3{
+    margin-bottom:8px;
+}
+
+.small{
+    color:#8b949e;
+    font-size:14px;
+}
+
+.member{
+    border:1px solid #30363d;
+    border-radius:14px;
+    padding:15px;
+    margin:12px 0;
+}
+
+.member-title{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+}
+
+.fields{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:8px;
+}
+
+.history-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+    border-bottom:1px solid #30363d;
+    padding:14px 0;
+}
+
+.history-item:last-child{
+    border-bottom:0;
+}
+
+.badge{
+    display:inline-block;
+    padding:5px 9px;
+    border-radius:999px;
+    background:#21262d;
+    color:#c9d1d9;
+    font-size:13px;
+}
+
+.report-box{
+    border:1px solid #30363d;
+    border-radius:14px;
+    padding:15px;
+    margin:12px 0;
+    background:#0d1117;
+}
+</style>
+</head>
+
+<body>
+
+<!-- تسجيل الدخول -->
+<div id="loginPage" class="container login">
+
+    <div class="card">
+
+        <h1>سجل مراجعات شرطة</h1>
+
+        <p class="small">
+            تسجيل الدخول
+        </p>
+
+        <input
+            id="username"
+            placeholder="اسم المستخدم"
+        >
+
+        <input
+            id="password"
+            type="password"
+            placeholder="كلمة المرور"
+        >
+
+        <button
+            class="btn blue"
+            style="width:100%"
+            onclick="login()"
+        >
+            دخول
+        </button>
+
+        <div id="loginError" class="error"></div>
+
+    </div>
+
+</div>
+
+
+<!-- التطبيق -->
+<div id="app" class="container hidden">
+
+    <div class="card header">
+
+        <div>
+            <h1>
+                سجل مراجعات شرطة
+            </h1>
+
+            <div
+                id="currentUserInfo"
+                class="small"
+            ></div>
+        </div>
+
+        <button
+            class="btn secondary"
+            onclick="logout()"
+        >
+            تسجيل الخروج
+        </button>
+
+    </div>
+
+
+    <!-- الصفحة الرئيسية -->
+
+    <div id="home">
+
+    </div>
+
+
+    <!-- صفحة القسم -->
+
+    <div id="sectionPage" class="hidden">
+
+        <button
+            class="btn secondary"
+            onclick="goHome()"
+        >
+            ← الأقسام
+        </button>
+
+
+        <div class="card">
+
+            <h2 id="sectionTitle"></h2>
+
+            <div class="small">
+                تقرير يومي مستقل لهذا القسم
+            </div>
+
+        </div>
+
+
+        <!-- إنشاء التقرير -->
+
+        <div
+            id="editArea"
+            class="card"
+        >
+
+            <h3>
+                📝 تسجيل تقرير جديد
+            </h3>
+
+            <label class="small">
+                تاريخ التقرير
+            </label>
+
+            <input
+                id="reportDate"
+                type="date"
+            >
+
+            <div id="members"></div>
+
+            <button
+                class="btn blue"
+                onclick="addMember()"
+            >
+                + إضافة عضو
+            </button>
+
+            <br>
+
+            <button
+                class="btn"
+                onclick="saveReport()"
+            >
+                💾 حفظ التقرير
+            </button>
+
+            <div
+                id="saveMessage"
+                class="small"
+            ></div>
+
+        </div>
+
+
+        <!-- السجل السابق -->
+
+        <div class="card">
+
+            <h3>
+                📚 مراجعة السجل السابق
+            </h3>
+
+            <div id="history"></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- عرض التقرير -->
+
+    <div id="viewReport" class="hidden">
+
+        <button
+            class="btn secondary"
+            onclick="backToSection()"
+        >
+            ← رجوع
+        </button>
+
+        <div class="card">
+
+            <h2 id="viewTitle"></h2>
+
+            <div id="viewContent"></div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================
+   الحسابات
+========================================= */
+
+const users = {
+
+    content_admin:{
+        password:"Qa27",
+        role:"content_admin",
+        name:"مسؤول المحتوى"
+    },
+
+    stats_admin:{
+        password:"Lm84",
+        role:"stats_admin",
+        name:"مسؤول الإحصاء"
+    },
+
+    monitor_admin:{
+        password:"Rx31",
+        role:"monitor_admin",
+        name:"مسؤول المراقبة"
+    },
+
+    content_report:{
+        password:"Vk56",
+        role:"content_report",
+        name:"مسؤول تقرير المحتوى"
+    },
+
+    stats_report:{
+        password:"Np72",
+        role:"stats_report",
+        name:"مسؤول تقرير الإحصاء"
+    },
+
+    monitor_report:{
+        password:"Zt49",
+        role:"monitor_report",
+        name:"مسؤول تقرير المراقبة"
+    },
+
+    chief_admin:{
+        password:"Hu63",
+        role:"chief_admin",
+        name:"المسؤول الرئيسي"
+    }
+
+};
+
+
+/* =========================================
+   الأقسام
+========================================= */
+
+const sections = {
+
+    content:{
+        title:"قسم المحتوى",
+
+        fields:[
+            ["عدد المهمات","tasks"],
+            ["عدد الأفكار","ideas"],
+            ["عدد التصاميم","designs"]
+        ]
+    },
+
+    stats:{
+        title:"قسم الإحصاء",
+
+        fields:[
+            ["عدد التعليقات الجيدة","goodComments"],
+            ["عدد الدوريات","patrols"]
+        ]
+    },
+
+    monitor:{
+        title:"قسم المراقبة",
+
+        fields:[
+            ["عدد المخالفات","violations"],
+            ["عدد الدوريات","patrols"]
+        ]
+    }
+
+};
+
+
+/* =========================================
+   المتغيرات
+========================================= */
+
+let currentSection = "";
+
+let editingMembers = [];
+
+let currentUser = null;
+
+
+/* =========================================
+   تسجيل الدخول
+========================================= */
+
+function login(){
+
+    const username =
+        document
+        .getElementById("username")
+        .value
+        .trim();
+
+    const password =
+        document
+        .getElementById("password")
+        .value;
+
+    const user = users[username];
+
+
+    if(user && user.password === password){
+
+        currentUser = {
+
+            username:username,
+
+            ...user
+
+        };
+
+
+        sessionStorage.setItem(
+            "currentUser",
+            JSON.stringify(currentUser)
+        );
+
+
+        logActivity(
+            "تسجيل الدخول إلى الموقع"
+        );
+
+
+        showApp();
+
+    }
+
+    else{
+
+        document
+        .getElementById("loginError")
+        .textContent =
+        "اسم المستخدم أو كلمة المرور غير صحيحة";
+
+    }
+
+}
+
+
+/* =========================================
+   تسجيل الخروج
+========================================= */
+
+function logout(){
+
+    if(currentUser){
+
+        logActivity(
+            "تسجيل الخروج"
+        );
+
+    }
+
+    sessionStorage.removeItem(
+        "currentUser"
+    );
+
+    location.reload();
+
+}
+
+
+/* =========================================
+   إظهار الموقع
+========================================= */
+
+function showApp(){
+
+    document
+    .getElementById("loginPage")
+    .classList
+    .add("hidden");
+
+
+    document
+    .getElementById("app")
+    .classList
+    .remove("hidden");
+
+
+    document
+    .getElementById("currentUserInfo")
+    .textContent =
+    currentUser.name +
+    " — " +
+    currentUser.username;
+
+
+    renderHome();
+
+}
+
+
+/* =========================================
+   تحديد القسم الخاص بالمستخدم
+========================================= */
+
+function roleSection(role){
+
+    if(role.startsWith("content"))
+        return "content";
+
+    if(role.startsWith("stats"))
+        return "stats";
+
+    return "monitor";
+
+}
+
+
+/* =========================================
+   هل يستطيع مشاهدة القسم؟
+========================================= */
+
+function canViewSection(section){
+
+    if(
+        currentUser.role ===
+        "chief_admin"
+    )
+        return true;
+
+
+    if(
+        currentUser.role ===
+        "content_admin" ||
+
+        currentUser.role ===
+        "stats_admin" ||
+
+        currentUser.role ===
+        "monitor_admin"
+    )
+        return true;
+
+
+    return (
+        roleSection(
+            currentUser.role
+        ) === section
+    );
+
+}
+
+
+/* =========================================
+   هل يستطيع تعديل القسم؟
+========================================= */
+
+function canEditSection(section){
+
+    if(
+        currentUser.role ===
+        "chief_admin"
+    )
+        return true;
+
+
+    return (
+        roleSection(
+            currentUser.role
+        ) === section
+    );
+
+}
+
+
+/* =========================================
+   وصف الأقسام
+========================================= */
+
+function sectionDescription(section){
+
+    if(section === "content")
+        return "المهمات والأفكار والتصاميم";
+
+    if(section === "stats")
+        return "التعليقات الجيدة والدوريات";
+
+    return "المخالفات والدوريات";
+
+}
+
+
+/* =========================================
+   الصفحة الرئيسية
+========================================= */
+
+function renderHome(){
+
+    const allSections = [
+        "content",
+        "stats",
+        "monitor"
+    ];
+
+
+    let visibleSections;
+
+
+    if(
+        currentUser.role ===
+        "chief_admin" ||
+
+        currentUser.role ===
+        "content_admin" ||
+
+        currentUser.role ===
+        "stats_admin" ||
+
+        currentUser.role ===
+        "monitor_admin"
+    ){
+
+        visibleSections =
+        allSections;
+
+    }
+
+    else{
+
+        visibleSections = [
+            roleSection(
+                currentUser.role
+            )
+        ];
+
+    }
+
+
+    let cards = "";
+
+
+    visibleSections.forEach(
+        section => {
+
+            const s =
+            sections[section];
+
+
+            let icon =
+            "👁️";
+
+
+            if(section === "content")
+                icon = "📋";
+
+            if(section === "stats")
+                icon = "📊";
+
+
+            cards += `
+
+                <div
+                    class="card section"
+                    onclick="openSection('${section}')"
+                >
+
+                    <h3>
+                        ${icon}
+                        ${s.title}
+                    </h3>
+
+                    <div class="small">
+                        ${sectionDescription(section)}
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+    );
+
+
+    let specialPanel = "";
+
+
+    if(
+        currentUser.role ===
+        "chief_admin"
+    ){
+
+        specialPanel = `
+
+            <div
+                class="card section"
+                onclick="openActivityLog()"
+            >
+
+                <h3>
+                    🔒 سجل المراقبة
+                </h3>
+
+                <div class="small">
+                    سجل دخول ونشاط جميع المستخدمين
+                </div>
+
+            </div>
+
+        `;
+
+    }
+
+
+    document
+    .getElementById("home")
+    .innerHTML = `
+
+        <div class="card">
+
+            <h2>
+                مرحبًا
+                ${escapeHtml(
+                    currentUser.name
+                )}
+            </h2>
+
+            <div class="small">
+
+                اسم المستخدم:
+                ${escapeHtml(
+                    currentUser.username
+                )}
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h2>
+                الأقسام
+            </h2>
+
+            <div class="section-grid">
+
+                ${cards}
+
+            </div>
+
+        </div>
+
+
+        ${specialPanel}
+
+    `;
+
+}
+
+
+/* =========================================
+   فتح القسم
+========================================= */
+
+function openSection(section){
+
+    if(!canViewSection(section))
+        return;
+
+
+    currentSection =
+    section;
+
+
+    logActivity(
+        "فتح " +
+        sections[section].title
+    );
+
+
+    document
+    .getElementById("home")
+    .classList
+    .add("hidden");
+
+
+    document
+    .getElementById("viewReport")
+    .classList
+    .add("hidden");
+
+
+    document
+    .getElementById("sectionPage")
+    .classList
+    .remove("hidden");
+
+
+    document
+    .getElementById("sectionTitle")
+    .textContent =
+    sections[section].title;
+
+
+    document
+    .getElementById("reportDate")
+    .value =
+    new Date()
+    .toISOString()
+    .slice(0,10);
+
+
+    document
+    .getElementById("saveMessage")
+    .textContent = "";
+
+
+    editingMembers = [];
+
+
+    if(
+        canEditSection(section)
+    ){
+
+        document
+        .getElementById("editArea")
+        .classList
+        .remove("hidden");
+
+
+        addMember();
+
+    }
+
+    else{
+
+        document
+        .getElementById("editArea")
+        .classList
+        .add("hidden");
+
+    }
+
+
+    renderHistory();
+
+}
+
+
+/* =========================================
+   الرجوع للرئيسية
+========================================= */
+
+function goHome(){
+
+    document
+    .getElementById("home")
+    .classList
+    .remove("hidden");
+
+
+    document
+    .getElementById("sectionPage")
+    .classList
+    .add("hidden");
+
+
+    document
+    .getElementById("viewReport")
+    .classList
+    .add("hidden");
+
+
+    renderHome();
+
+}
+
+
+/* =========================================
+   إضافة عضو
+========================================= */
+
+function addMember(){
+
+    if(
+        !canEditSection(
+            currentSection
+        )
+    )
+        return;
+
+
+    editingMembers.push({
+
+        id:
+        Date.now() +
+        Math.random(),
+
+        name:"",
+
+        values:{}
+
+    });
+
+
+    renderMembers();
+
+}
+
+
+/* =========================================
+   حذف عضو
+========================================= */
+
+function removeMember(id){
+
+    if(
+        !canEditSection(
+            currentSection
+        )
+    )
+        return;
+
+
+    editingMembers =
+    editingMembers.filter(
+        member =>
+        member.id !== id
+    );
+
+
+    renderMembers();
+
+}
+
+
+/* =========================================
+   عرض الأعضاء
+========================================= */
+
+function renderMembers(){
+
+    const box =
+    document.getElementById(
+        "members"
+    );
+
+
+    box.innerHTML = "";
+
+
+    editingMembers.forEach(
+        (member,index) => {
+
+            let fields = "";
+
+
+            sections[
+                currentSection
+            ]
+            .fields
+            .forEach(
+                field => {
+
+                    const label =
+                    field[0];
+
+                    const key =
+                    field[1];
+
+
+                    fields += `
+
+                        <div>
+
+                            <label
+                                class="small"
+                            >
+                                ${label}
+                            </label>
+
+                            <input
+                                type="number"
+                                min="0"
+                                value="${
+                                    member
+                                    .values[key]
+                                    ?? 0
+                                }"
+                                data-id="${
+                                    member.id
+                                }"
+                                data-key="${
+                                    key
+                                }"
+                                oninput="
+                                    updateValue(this)
+                                "
+                            >
+
+                        </div>
+
+                    `;
+
+                }
+            );
+
+
+            const div =
+            document.createElement(
+                "div"
+            );
+
+
+            div.className =
+            "member";
+
+
+            div.innerHTML = `
+
+                <div
+                    class="member-title"
+                >
+
+                    <strong>
+                        عضو ${index + 1}
+                    </strong>
+
+                    <button
+                        class="btn danger"
+                        onclick="
+                            removeMember(
+                                ${member.id}
+                            )
+                        "
+                    >
+                        حذف
+                    </button>
+
+                </div>
+
+
+                <label
+                    class="small"
+                >
+                    اسم العضو
+                </label>
+
+
+                <input
+                    value="${
+                        escapeHtml(
+                            member.name
+                        )
+                    }"
+                    placeholder="
+                        اكتب اسم العضو
+                    "
+                    data-id="${
+                        member.id
+                    }"
+                    oninput="
+                        updateName(this)
+                    "
+                >
+
+
+                <div class="fields">
+
+                    ${fields}
+
+                </div>
+
+            `;
+
+
+            box.appendChild(div);
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   تحديث اسم العضو
+========================================= */
+
+function updateName(input){
+
+    const member =
+    editingMembers.find(
+        m =>
+        m.id ==
+        input.dataset.id
+    );
+
+
+    if(member)
+        member.name =
+        input.value;
+
+}
+
+
+/* =========================================
+   تحديث الرقم
+========================================= */
+
+function updateValue(input){
+
+    const member =
+    editingMembers.find(
+        m =>
+        m.id ==
+        input.dataset.id
+    );
+
+
+    if(member){
+
+        member.values[
+            input.dataset.key
+        ] =
+        Number(input.value) || 0;
+
+    }
+
+}
+
+
+/* =========================================
+   حفظ التقرير
+========================================= */
+
+function saveReport(){
+
+    if(
+        !canEditSection(
+            currentSection
+        )
+    ){
+
+        alert(
+            "ليس لديك صلاحية تعديل هذا القسم"
+        );
+
+        return;
+
+    }
+
+
+    const date =
+    document
+    .getElementById(
+        "reportDate"
+    )
+    .value;
+
+
+    if(!date){
+
+        alert(
+            "اختر تاريخ التقرير"
+        );
+
+        return;
+
+    }
+
+
+    const validMembers =
+    editingMembers.filter(
+        member =>
+        member.name.trim()
+    );
+
+
+    if(
+        validMembers.length === 0
+    ){
+
+        alert(
+            "أضف اسم عضو واحد على الأقل"
+        );
+
+        return;
+
+    }
+
+
+    const data =
+    JSON.parse(
+        localStorage.getItem(
+            "policeReports"
+        ) || "{}"
+    );
+
+
+    if(!data[currentSection])
+        data[currentSection] = [];
+
+
+    const report = {
+
+        id:Date.now(),
+
+        date:date,
+
+        members:
+        validMembers.map(
+            member => ({
+
+                name:
+                member.name.trim(),
+
+                values:
+                member.values
+
+            })
+        ),
+
+        createdBy:
+        currentUser.username
+
+    };
+
+
+    const existingIndex =
+    data[
+        currentSection
+    ].findIndex(
+        report =>
+        report.date === date
+    );
+
+
+    if(
+        existingIndex >= 0
+    ){
+
+        if(
+            !confirm(
+                "يوجد تقرير بهذا التاريخ. هل تريد استبداله؟"
+            )
+        )
+            return;
+
+
+        data[
+            currentSection
+        ][existingIndex] =
+        report;
+
+
+        logActivity(
+            "عدّل تقرير " +
+            sections[currentSection].title +
+            " بتاريخ " +
+            formatDate(date)
+        );
+
+    }
+
+    else{
+
+        data[
+            currentSection
+        ].push(report);
+
+
+        logActivity(
+            "أضاف تقرير " +
+            sections[currentSection].title +
+            " بتاريخ " +
+            formatDate(date)
+        );
+
+    }
+
+
+    data[
+        currentSection
+    ].sort(
+        (a,b) =>
+        b.date.localeCompare(
+            a.date
+        )
+    );
+
+
+    localStorage.setItem(
+        "policeReports",
+        JSON.stringify(data)
+    );
+
+
+    document
+    .getElementById(
+        "saveMessage"
+    )
+    .textContent =
+    "تم حفظ التقرير بنجاح ✓";
+
+
+    renderHistory();
+
+}
+
+
+/* =========================================
+   السجل السابق
+========================================= */
+
+function renderHistory(){
+
+    const box =
+    document.getElementById(
+        "history"
+    );
+
+
+    const data =
+    JSON.parse(
+        localStorage.getItem(
+            "policeReports"
+        ) || "{}"
+    );
+
+
+    const reports =
+    (
+        data[currentSection] ||
+        []
+    ).sort(
+        (a,b) =>
+        b.date.localeCompare(
+            a.date
+        )
+    );
+
+
+    if(
+        reports.length === 0
+    ){
+
+        box.innerHTML = `
+            <div class="small">
+                لا توجد تقارير سابقة لهذا القسم.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    box.innerHTML =
+    reports.map(
+        report => `
+
+            <div class="history-item">
+
+                <div>
+
+                    <strong>
+                        📅
+                        ${formatDate(
+                            report.date
+                        )}
+                    </strong>
+
+                    <br>
+
+                    <span class="badge">
+                        ${report.members.length}
+                        أعضاء
+                    </span>
+
+                </div>
+
+
+                <button
+                    class="btn blue"
+                    onclick="
+                        showReport(
+                            ${report.id}
+                        )
+                    "
+                >
+                    عرض التقرير
+                </button>
+
+            </div>
+
+        `
+    ).join("");
+
+}
+
+
+/* =========================================
+   عرض تقرير
+========================================= */
+
+function showReport(id){
+
+    const data =
+    JSON.parse(
+        localStorage.getItem(
+            "policeReports"
+        ) || "{}"
+    );
+
+
+    const report =
+    (
+        data[currentSection] ||
+        []
+    ).find(
+        r =>
+        r.id === id
+    );
+
+
+    if(!report)
+        return;
+
+
+    logActivity(
+        "عرض تقرير " +
+        sections[currentSection].title +
+        " بتاريخ " +
+        formatDate(
+            report.date
+        )
+    );
+
+
+    document
+    .getElementById(
+        "sectionPage"
+    )
+    .classList
+    .add("hidden");
+
+
+    document
+    .getElementById(
+        "viewReport"
+    )
+    .classList
+    .remove("hidden");
+
+
+    document
+    .getElementById(
+        "viewTitle"
+    )
+    .textContent =
+    sections[currentSection].title +
+    " — " +
+    formatDate(
+        report.date
+    );
+
+
+    document
+    .getElementById(
+        "viewContent"
+    )
+    .innerHTML =
+
+    report.members
+    .map(
+        member => `
+
+            <div class="report-box">
+
+                <h3>
+                    ${escapeHtml(
+                        member.name
+                    )}
+                </h3>
+
+
+                ${
+                    sections[
+                        currentSection
+                    ]
+                    .fields
+                    .map(
+                        field => `
+
+                            <div
+                                class="small"
+                            >
+
+                                ${field[0]}:
+
+                                <strong>
+
+                                    ${
+                                        member
+                                        .values[
+                                            field[1]
+                                        ] ?? 0
+                                    }
+
+                                </strong>
+
+                            </div>
+
+                        `
+                    )
+                    .join("")
+                }
+
+            </div>
+
+        `
+    )
+    .join("");
+
+}
+
+
+/* =========================================
+   الرجوع من التقرير
+========================================= */
+
+function backToSection(){
+
+    document
+    .getElementById(
+        "viewReport"
+    )
+    .classList
+    .add("hidden");
+
+
+    document
+    .getElementById(
+        "sectionPage"
+    )
+    .classList
+    .remove("hidden");
+
+}
+
+
+/* =========================================
+   سجل المراقبة الخاص بالمسؤول الرئيسي
+========================================= */
+
+function openActivityLog(){
+
+    if(
+        currentUser.role !==
+        "chief_admin"
+    )
+        return;
+
+
+    logActivity(
+        "فتح سجل المراقبة"
+    );
+
+
+    document
+    .getElementById(
+        "home"
+    )
+    .classList
+    .add("hidden");
+
+
+    document
+    .getElementById(
+        "sectionPage"
+    )
+    .classList
+    .add("hidden");
+
+
+    document
+    .getElementById(
+        "viewReport"
+    )
+    .classList
+    .remove("hidden");
+
+
+    document
+    .getElementById(
+        "viewTitle"
+    )
+    .textContent =
+    "🔒 سجل المراقبة";
+
+
+    const logs =
+    JSON.parse(
+        localStorage.getItem(
+            "activityLog"
+        ) || "[]"
+    )
+    .slice()
+    .reverse();
+
+
+    if(
+        logs.length === 0
+    ){
+
+        document
+        .getElementById(
+            "viewContent"
+        )
+        .innerHTML = `
+
+            <div class="small">
+                لا يوجد نشاط مسجل حتى الآن.
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    document
+    .getElementById(
+        "viewContent"
+    )
+    .innerHTML =
+
+    logs.map(
+        log => `
+
+            <div
+                class="history-item"
+            >
+
+                <div>
+
+                    <strong>
+                        👤
+                        ${escapeHtml(
+                            log.username
+                        )}
+                    </strong>
+
+                    <br>
+
+                    <span
+                        class="small"
+                    >
+                        🕒
+                        ${escapeHtml(
+                            log.time
+                        )}
+                    </span>
+
+                    <br>
+
+                    <span
+                        class="small"
+                    >
+                        ${escapeHtml(
+                            log.activity
+                        )}
+                    </span>
+
+                </div>
+
+            </div>
+
+        `
+    ).join("");
+
+}
+
+
+/* =========================================
+   تسجيل النشاط
+========================================= */
+
+function logActivity(activity){
+
+    if(!currentUser)
+        return;
+
+
+    const logs =
+    JSON.parse(
+        localStorage.getItem(
+            "activityLog"
+        ) || "[]"
+    );
+
+
+    logs.push({
+
+        username:
+        currentUser.username,
+
+        time:
+        new Date()
+        .toLocaleString(
+            "ar-TN"
+        ),
+
+        activity:
+        activity
+
+    });
+
+
+    localStorage.setItem(
+        "activityLog",
+        JSON.stringify(logs)
+    );
+
+}
+
+
+/* =========================================
+   التاريخ
+========================================= */
+
+function formatDate(date){
+
+    const parts =
+    date.split("-");
+
+
+    return (
+        parts[2] +
+        "/" +
+        parts[1] +
+        "/" +
+        parts[0]
+    );
+
+}
+
+
+/* =========================================
+   حماية النص
+========================================= */
+
+function escapeHtml(text){
+
+    return String(text)
+    .replace(
+        /[&<>"']/g,
+
+        character => ({
+
+            "&":"&amp;",
+            "<":"&lt;",
+            ">":"&gt;",
+            '"':"&quot;",
+            "'":"&#039;"
+
+        })[character]
+    );
+
+}
+
+
+/* =========================================
+   استعادة الجلسة
+========================================= */
+
+const savedUser =
+sessionStorage.getItem(
+    "currentUser"
+);
+
+
+if(savedUser){
+
+    currentUser =
+    JSON.parse(
+        savedUser
+    );
+
+
+    showApp();
+
+}
+
+</script>
+
+</body>
+</html>
