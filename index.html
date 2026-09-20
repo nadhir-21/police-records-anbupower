@@ -1885,5 +1885,33 @@ if(savedUser){
 
   loadDepartments();
 </script>
+<div>
+  <input id="name" type="text" placeholder="Name">
+  <input id="department" type="text" placeholder="Department">
+  <button onclick="saveData()">حفظ</button>
+</div>
+
+<script>
+  async function saveData() {
+    const name = document.getElementById("name").value;
+    const department = document.getElementById("department").value;
+
+    const { error } = await supabase
+      .from("department")
+      .insert([
+        {
+          name: name,
+          department: department
+        }
+      ]);
+
+    if (error) {
+      alert("حدث خطأ: " + error.message);
+      return;
+    }
+
+    alert("تم حفظ البيانات بنجاح");
+  }
+</script>
 </body>
 </html>
