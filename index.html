@@ -1358,7 +1358,19 @@ function saveReport(){
         "policeReports",
         JSON.stringify(data)
     );
-
+fetch("https://script.google.com/macros/s/AKfycbwomHCyW8hJeWAP10nOctkoJkZW2P-aapNhhe_KU18HEjkPo04G_nwAFtnxg6L2eVc/exec", {
+    method: "POST",
+    body: JSON.stringify({
+        section: currentSection,
+        date: date,
+        members: validMembers.map(member => ({
+            name: member.name.trim(),
+            values: member.values
+        }))
+    })
+}).catch(error => {
+    console.error("Google Sheets backup error:", error);
+});
 
     document
     .getElementById(
@@ -1847,29 +1859,6 @@ sessionStorage.getItem(
 
 
 if(savedUser){
-
-    currentUser =
-    JSON.parse(
-        savedUser
-    );
-
-
-    showApp();
-
-}
-
-</script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-async function saveData() {
-  const name = document.getElementById("name").value.trim();
-  const department = document.getElementById("department").value.trim();
-
-  if (!name || !department) {
-    alert("اكتب Name و Department");
-    return;
-  }
 
   const response = await fetch("https://script.google.com/macros/s/AKfycbwomHCyW8hJeWAP10nOctkoJkZW2P-aapNhhe_KU18HEjkPo04G_nwAFtnxg6L2eVc/exec", {
     method: "POST",
