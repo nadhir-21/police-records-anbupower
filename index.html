@@ -1849,11 +1849,12 @@ sessionStorage.getItem(
 
 if(savedUser){
 
-  if (response.ok) {
-    alert("تم حفظ البيانات بنجاح");
-  } else {
-    alert("حدث خطأ أثناء الحفظ");
-  }
+    currentUser =
+        JSON.parse(savedUser);
+
+    showApp();
+
+}
 }
 </script>
 
