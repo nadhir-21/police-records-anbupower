@@ -1371,30 +1371,6 @@ fetch("https://script.google.com/macros/s/AKfycbwomHCyW8hJeWAP10nOctkoJkZW2P-aap
 }).catch(error => {
     console.error("Google Sheets backup error:", error);
 });
-fetch("https://script.google.com/macros/s/AKfycbwomHCyW8hJeWAP10nOctkoJkZW2P-aapNhhe_KU18HEjkPo04G_nwAFtnxg6L2eVc/exec", {
-    method: "POST",
-    body: JSON.stringify({
-        section: currentSection,
-        date: date,
-        members: validMembers.map(member => ({
-            name: member.name.trim(),
-            values: member.values
-        }))
-    })
-}).catch(error => {
-    console.error("Google Sheets backup error:", error);
-});
-
-    document
-    .getElementById(
-        "saveMessage"
-    )
-    .textContent =
-    "تم حفظ التقرير بنجاح ✓";
-
-
-    renderHistory();
-
 }
 
 
@@ -1872,11 +1848,6 @@ sessionStorage.getItem(
 
 
 if(savedUser){
-
-  const response = await fetch("https://script.google.com/macros/s/AKfycbwomHCyW8hJeWAP10nOctkoJkZW2P-aapNhhe_KU18HEjkPo04G_nwAFtnxg6L2eVc/exec", {
-    method: "POST",
-    body: JSON.stringify({ name, department })
-  });
 
   if (response.ok) {
     alert("تم حفظ البيانات بنجاح");
