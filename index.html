@@ -1686,11 +1686,11 @@ cards += `
                 </div>
 
                 <div class="card">
-                    <h3>أسماء إدارة المركز — 7 حسابات</h3>
+                   <h3>أسماء إدارة المركز</h3>
                     <div class="small">لكل قسم اسم مسؤول واسم مراجع مستقلان، إضافة إلى مسؤول رئيسي واحد. تُحفظ هذه الأسماء على هذا الجهاز فقط حتى لا نغيّر قاعدة البيانات.</div>
                     <div class="staff-section-card">
-                      <h4>المسؤول الرئيسي (حساب واحد)</h4>
-                      <label class="small" for="centerChiefName">اسم المسؤول الرئيسي</label>
+                      <h4>المسؤول الرئيسي </h4>
+                      <label class="small" for="centerChiefName">المسؤول الرئيسي</label>
                       <input id="centerChiefName" type="text" maxlength="80" placeholder="اسم المسؤول الرئيسي">
                     </div>
                     ${[["content","قسم المحتوى"],["stats","قسم الإحصاء"],["monitor","قسم المراقبة"]].map(([key,title])=>`
@@ -1701,7 +1701,7 @@ cards += `
                           <div><label class="small" for="staff_${key}_reviewer">اسم المراجع</label><input id="staff_${key}_reviewer" type="text" maxlength="80" placeholder="مراجع ${title}"></div>
                         </div>
                       </div>`).join("")}
-                    <button class="btn blue" onclick="saveCenterStaff()">حفظ أسماء الحسابات السبعة</button>
+                    <button class="btn blue" onclick="saveCenterStaff()">حفظ أسماء  </button>
                     <span id="centerStaffMessage" class="small" role="status"></span>
                 </div>
 
